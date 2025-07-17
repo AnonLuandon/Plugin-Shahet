@@ -36,7 +36,7 @@ public final class Shadet extends JavaPlugin implements Listener {
                     }
                 }
             }
-        }, 0L, 20L); // обновляем каждую секунду
+        }, 0L, 20L);
     }
 
     @Override
@@ -45,7 +45,7 @@ public final class Shadet extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onPhantomHit(EntityDamageByEntityEvent event) {
+    public void PhantomBabaxEvent(EntityDamageByEntityEvent event) {
         if (event.getDamager().getType() == EntityType.PHANTOM) {
             Phantom phantom = (Phantom) event.getDamager();
             Location loc = phantom.getLocation();
