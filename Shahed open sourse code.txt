@@ -1,0 +1,56 @@
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Phantom;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.plugin.java.JavaPlugin;
+
+
+public final class Shadet extends JavaPlugin implements Listener {
+
+    @Override
+    public void onEnable() {
+        getLogger().info("Accept Shahed");
+        getServer().getPluginManager().registerEvents(this, this);
+
+        Bukkit.getScheduler().runTaskTimer(this, () -> {
+            for (var world : Bukkit.getWorlds()) {
+                for (var entity : world.getEntitiesByClass(Phantom.class)) {
+                    Phantom phantom = (Phantom) entity;
+                    Player nearestPlayer = null;
+                    double nearestDistance = Double.MAX_VALUE;
+
+                    for (Player player : world.getPlayers()) {
+                        double distance = player.getLocation().distance(phantom.getLocation());
+                        if (distance < nearestDistance) {
+                            nearestDistance = distance;
+                            nearestPlayer = player;
+                        }
+                    }
+
+                    if (nearestPlayer != null) {
+                        phantom.setTarget(nearestPlayer);
+                    }
+                }
+            }
+        }, 0L, 20L); // обновляем каждую секунду
+    }
+
+    @Override
+    public void onDisable() {
+        getLogger().info("Delince Shahed");
+    }
+
+    @EventHandler
+    public void onPhantomHit(EntityDamageByEntityEvent event) {
+        if (event.getDamager().getType() == EntityType.PHANTOM) {
+            Phantom phantom = (Phantom) event.getDamager();
+            Location loc = phantom.getLocation();
+            phantom.getWorld().createExplosion(loc, 4.0f, true, true);
+            phantom.remove();
+        }
+    }
+}
